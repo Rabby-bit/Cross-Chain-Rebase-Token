@@ -28,8 +28,9 @@ pragma solidity ^0.8.24;
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {AccessControl} from "@openzeppelin/contracts/access/AccessControl.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {iRebaseToken} from "src/iRebaseToken.sol";
 
-contract RebaseToken is ERC20, AccessControl, Ownable {
+contract RebaseToken is ERC20, AccessControl, Ownable, iRebaseToken {
     // State variables
     uint256 private sInterestRate = 5e10;
     uint256 private constant PRECISION_FACTOR = 1e18;
@@ -89,7 +90,7 @@ contract RebaseToken is ERC20, AccessControl, Ownable {
         if (_newInterestRate > sInterestRate) {
             revert RebaseToken__InterestRateShouldOnlyDecrease();
         }
-        _newInterestRate = sInterestRate;
+        // _newInterestRate = sInterestRate;
         emit InterestRateSet(_newInterestRate);
     }
 
@@ -129,5 +130,9 @@ contract RebaseToken is ERC20, AccessControl, Ownable {
 
     function getUserInterestRate(address _user) external view returns (uint256) {
         return sUserToInterestRate[_user];
+    }
+
+    function getPrincipalBalance(address _user) external view returns (uint256) {
+        return super.balanceOf(_user);
     }
 }
