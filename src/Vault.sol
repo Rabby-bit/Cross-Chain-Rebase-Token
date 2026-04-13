@@ -59,9 +59,14 @@ contract Vault is ReentrancyGuard, AccessControl {
         if (msg.value == 0) {
             revert Vault__CantDepositZero();
         }
+        uint256 userInterestRate = i_rebaseToken.getUserInterestRate(msg.sender);
+
+        if (userInterestRate == 0) {
+            userInterestRate = i_rebaseToken.getInterestRate(); // define this
+        }
 
         sUserToAmountDeposited[msg.sender] += msg.value;
-        i_rebaseToken.mint(msg.sender, msg.value);
+        i_rebaseToken.mint(msg.sender, msg.value, userInterestRate);
 
         emit Deposited(msg.sender, msg.value);
     }

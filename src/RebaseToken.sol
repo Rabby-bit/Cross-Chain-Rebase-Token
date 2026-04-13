@@ -48,9 +48,9 @@ contract RebaseToken is ERC20, AccessControl, Ownable, iRebaseToken {
     constructor() ERC20("RebaseToken", "RBT") Ownable(msg.sender) {}
 
     ///External//
-    function mint(address _user, uint256 _amount) external onlyRole(BURN_MINTER_ROLE) {
+    function mint(address _user, uint256 _amount, uint256 _userInterestRate) external onlyRole(BURN_MINTER_ROLE) {
         _mintAccuredInterest(_user);
-        sUserToInterestRate[_user] += sInterestRate;
+        sUserToInterestRate[_user] = _userInterestRate;
         sUserToAmountMinted[_user] += _amount;
         _mint(_user, _amount);
     }
@@ -90,9 +90,12 @@ contract RebaseToken is ERC20, AccessControl, Ownable, iRebaseToken {
         if (_newInterestRate > sInterestRate) {
             revert RebaseToken__InterestRateShouldOnlyDecrease();
         }
-        // _newInterestRate = sInterestRate;
+        sInterestRate = _newInterestRate;
         emit InterestRateSet(_newInterestRate);
     }
+    //earlier we talked about storage and storage variables,
+    //the line i comment out
+    //but do i really update the storage interest to the _newInterfestRate
 
     function grantRole(bytes32 role, address account) public override onlyOwner {
         _grantRole(BURN_MINTER_ROLE, account);
@@ -134,5 +137,9 @@ contract RebaseToken is ERC20, AccessControl, Ownable, iRebaseToken {
 
     function getPrincipalBalance(address _user) external view returns (uint256) {
         return super.balanceOf(_user);
+    }
+
+    function getInterestRate() external view returns (uint256) {
+        return sInterestRate;
     }
 }

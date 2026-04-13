@@ -76,7 +76,7 @@ contract VaultandTokenTest is Test {
     function test__mintRevert() public {
         vm.startPrank(user);
         vm.expectRevert();
-        rebaseToken.mint(user2, 2);
+        rebaseToken.mint(user2, 2, 4e10);
         vm.stopPrank();
     }
 
