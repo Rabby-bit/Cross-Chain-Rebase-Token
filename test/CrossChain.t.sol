@@ -14,6 +14,8 @@ import {RegistryModuleOwnerCustom} from "@chainlink-ccip/contracts/tokenAdminReg
 import {TokenAdminRegistry} from "@chainlink-ccip/contracts/tokenAdminRegistry/TokenAdminRegistry.sol";
 import {RateLimiter} from "@chainlink-ccip/contracts/libraries/RateLimiter.sol";
 import {TokenPool} from "@chainlink-ccip/contracts/pools/TokenPool.sol";
+import {Client} from "@chainlink-ccip/contracts/libraries/Client.sol";
+import {IRouterClient} from "@chainlink-ccip/contracts/interfaces/IRouterClient.sol";
 // import{RegistryModuleOwnerCustom} from "@chainlink-local/src/ccip/RegistryModuleOwnerCustom.sol";
 
 contract CrossChainTest is Test {
@@ -125,5 +127,67 @@ contract CrossChainTest is Test {
 
         vm.startPrank(owner);
         TokenPool(localpool).applyChainUpdates(remoteChainSelectorsToRemove, chainsToAdd);
+    }
+
+    function bridgeTokenTransfer(
+        uint256 localfork,
+        uint256 remotefork,
+        Register.NetworkDetails memory localNetworkDetails,
+        Register.NetworkDetails memory remoteNetworkDetails,
+        RebaseToken localtoken,
+        RebaseToken remotetoken,
+        uint256 amountToBridge
+    ) public {
+        address user = makeAddr("user");
+        vm.selectFork(localfork);
+
+        //        struct EVM2AnyMessage {
+        //     bytes receiver; // abi.encode(receiver address) for dest EVM chains.
+        //     bytes data; // Data payload.
+        //     EVMTokenAmount[] tokenAmounts; // Token transfers.
+        //     address feeToken; // Address of feeToken. address(0) means you will send msg.value.
+        //     bytes extraArgs; // Populate this with _argsToBytes(EVMExtraArgsV3).
+        //   }
+
+        // struct EVMTokenAmount {
+        //     address token; // token address on the local chain.
+        //     uint256 amount; // Amount of tokens.
+        //   }
+
+        Client.EVMTokenAmount[] memory tokenAmounts = new Client.EVMTokenAmount[](1);
+        tokenAmounts[0] = Client.EVMTokenAmount({token: address(localtoken), amount: amountToBridge});
+
+        Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
+            receiver: abi.encode(user),
+            data: "",
+            tokenAmounts: tokenAmounts,
+            feeToken: address(localtoken),
+            extraArgs: Client._argsToBytes(Client.EVMExtraArgsV1({gasLimit: 0}))
+        });
+        vm.prank(user);
+        uint256 fees =
+            IRouterClient(localNetworkDetails.routerAddress).getFee(localNetworkDetails.chainSelector, message);
+        console.log("Fees to bridge: ", fees);
+
+        cCIPLocalSimulatorFork.requestLinkFromFaucet(user, fees);
+        // vm.selectFork(remotefork);
+        vm.prank(user);
+        IERC20(localNetworkDetails.linkAddress).approve(localNetworkDetails.routerAddress, fees);
+        vm.prank(user);
+        IERC20(address(localtoken)).approve(localNetworkDetails.routerAddress, amountToBridge);
+        uint256 localBalanceBefore = localtoken.balanceOf(user);
+        vm.prank(user);
+        IRouterClient(remoteNetworkDetails.routerAddress).ccipSend(remoteNetworkDetails.chainSelector, message);
+        uint256 localBalanceAfter = localtoken.balanceOf(user);
+
+        assertEq(localBalanceBefore, localBalanceAfter + amountToBridge, "User should have less tokens after bridging");
+
+        vm.warp(block.timestamp + 1 days);
+        vm.selectFork(remotefork);
+        uint256 remoteBalanceOfUserBefore = remotetoken.balanceOf(user);
+        cCIPLocalSimulatorFork.switchChainAndRouteMessage(remotefork);
+
+        uint256 remoteBalanceOfUserAfter = remotetoken.balanceOf(user);
+        assertEq(remoteBalanceOfUserAfter, remoteBalanceOfUserBefore + amountToBridge);
     }
 }
