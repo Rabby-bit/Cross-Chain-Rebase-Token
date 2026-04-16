@@ -11,13 +11,16 @@ import {Pool} from "@chainlink-ccip/contracts/libraries/Pool.sol";
 
 contract RebaseTokenPool is TokenPool {
     iRebaseToken internal immutable _iRebaseToken;
+
     constructor(
-        IERC20 _iRebaseToken,
+        IERC20 _token,
         uint8 _localTokenDecimals,
         address _advancedTokenPool,
         address _rmnProxy,
         address _router
-    ) TokenPool(_iRebaseToken, 18, _advancedTokenPool, _rmnProxy, _router) {}
+    ) TokenPool(_token, 18, _advancedTokenPool, _rmnProxy, _router) {
+        _iRebaseToken = iRebaseToken(address(_token));
+    }
 
     function lockOrBurn(
         Pool.LockOrBurnInV1 calldata lockOrBurnIn,

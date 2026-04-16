@@ -2,7 +2,7 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-rpc_endpoints = { sepolia = "https://rpc.ankr.com/eth_hoodi/f06dfbb9836f2c8f136fed4c0f6b11534c2360dd8dc59c82b86077a9dcb991d2", arb-sepolia = "https://rpc.ankr.com/arbitrum_sepolia/f06dfbb9836f2c8f136fed4c0f6b11534c2360dd8dc59c82b86077a9dcb991d2" }
+rpc_endpoints = { sepolia = "https://rpc.ankr.com/eth_sepolia/f06dfbb9836f2c8f136fed4c0f6b11534c2360dd8dc59c82b86077a9dcb991d2", arb-sepolia = "https://rpc.ankr.com/arbitrum_sepolia/f06dfbb9836f2c8f136fed4c0f6b11534c2360dd8dc59c82b86077a9dcb991d2" }
 
 remappings = ["@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/" ,
 "@chainlink-ccip/contracts/=lib/chainlink-ccip/chains/evm/contracts/" ,
