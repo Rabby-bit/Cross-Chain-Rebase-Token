@@ -1,66 +1,47 @@
-## Foundry
+Cross-Chain Rebase Token (Educational Project)
+Overview
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+This project is an educational implementation of a Cross-Chain Rebase Token system built while following the Cyfrin Updraft smart contract security curriculum.
 
-Foundry consists of:
+It is not a production-ready system, but a learning exercise focused on understanding cross-chain messaging, token rebasing mechanics, and smart contract security patterns.
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Purpose
 
-## Documentation
+The goal of this repository is to:
 
-https://book.getfoundry.sh/
+Document my learning journey in smart contract development
+Practice implementing cross-chain token logic
+Understand rebase token mechanics and their implications
+Explore secure contract design patterns using Foundry
+Important Notice
 
-## Usage
+⚠️ This project is strictly for educational purposes.
+It is not audited, not production-ready, and should not be used in a live environment.
 
-### Build
+Key Concepts Covered
+Cross-chain communication concepts
+Rebase token mechanics
+Smart contract state synchronization
+Security considerations in cross-chain systems
+Foundry-based development workflow
+Tech Stack
+Solidity
+Foundry
+OpenZeppelin Contracts
+Cyfrin Updraft Learning Material
+Project Structure
+src/ → Core smart contracts
+test/ → Foundry test cases
+script/ → Deployment / interaction scripts
+Learning Focus
 
-```shell
-$ forge build
-```
+This project was built while studying:
 
-### Test
+Cross-chain architecture patterns
+Token supply adjustment mechanisms (rebasing)
+Secure contract interactions across chains
+Testing smart contracts using Foundry
+Disclaimer
 
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+This repository is part of an ongoing learning journey in Web3 development and smart contract security.
+All implementations are experimental and may contain inefficiencies or incomplete patterns.
